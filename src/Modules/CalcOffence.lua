@@ -2020,10 +2020,15 @@ function calcs.offence(env, actor, activeSkill)
 			-- calc for minimum accuracy required to hit an enemy
 			-- Formula for chance to hit https://www.poewiki.net/wiki/Accuracy
 			local minAccOut="" --holds the breakdown output for minimum accuracy calculations
+			local accDiffPercent = 0 --holds the percent increase needed to reach minimum accuracy
 			local minAccToHit = round((.995*(enemyEvasion/5)^0.9)/(1.25-.995),0) -- holds the minimum total accuracy needed
 			local accDiff = minAccToHit - output.Accuracy --Difference between the current character accuracy and the minimum needed
 			if accDiff ~= 0 then
-				local accDiffPercent = round((100*(((minAccToHit)/(baseVsEnemy*moreVsEnemy))-1))-incVsEnemy) --The amount of % increases to reach minAccToHit from output.Accuracy
+				if output.Accuracy > 0 then
+					accDiffPercent = round((100*(((minAccToHit)/(baseVsEnemy*moreVsEnemy))-1))-incVsEnemy) --The amount of % increases to reach minAccToHit from output.Accuracy
+				else
+					accDiffPercent = 0 --removes odd cases
+				end
 				local scaledFlatAccDiff = round(accDiff/((1+incVsEnemy/100) * moreVsEnemy)) --scale the accDiff based on % increase and more to give
 				if accDiff > 0 then
 					scaledFlatAccDiff = "+"..scaledFlatAccDiff --add a + to the scaled flat acc diff
