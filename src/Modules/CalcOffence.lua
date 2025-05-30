@@ -2016,12 +2016,29 @@ function calcs.offence(env, actor, activeSkill)
 			output.AccuracyHitChance = 100
 		else
 			local enemyEvasion = m_max(round(calcLib.val(enemyDB, "Evasion")), 0)
+
+			-- calc for minimum accuracy required to hit an enemy
+			-- Formula for chance to hit https://www.poewiki.net/wiki/Accuracy
+			local minAccOut="" --holds the breakdown output for minimum accuracy calculations
+			local minAccToHit = round((.995*(enemyEvasion/5)^0.9)/(1.25-.995),0) -- holds the minimum total accuracy needed
+			local accDiff = minAccToHit - output.Accuracy --Difference between the current character accuracy and the minimum needed
+			if accDiff ~= 0 then
+				local accDiffPercent = round((100*(((minAccToHit)/(baseVsEnemy*moreVsEnemy))-1))-incVsEnemy) --The amount of % increases to reach minAccToHit from output.Accuracy
+				local scaledFlatAccDiff = round(accDiff/((1+incVsEnemy/100) * moreVsEnemy)) --scale the accDiff based on % increase and more to give
+				if accDiff > 0 then
+					scaledFlatAccDiff = "+"..scaledFlatAccDiff --add a + to the scaled flat acc diff
+				end
+				minAccOut = s_format("Required accuracy for 100%%: %d (%d%% inc Acc / %s to Acc)", minAccToHit, accDiffPercent, scaledFlatAccDiff)
+			end
+			-- end of minimum accuracy calculations
+
 			output.AccuracyHitChance = calcs.hitChance(enemyEvasion, accuracyVsEnemy) * calcLib.mod(skillModList, cfg, "HitChance")
 			if breakdown then
 				breakdown.AccuracyHitChance = {
 					"Enemy level: "..env.enemyLevel..(env.configInput.enemyLevel and " ^8(overridden from the Configuration tab" or " ^8(can be overridden in the Configuration tab)"),
 					"Enemy evasion: "..enemyEvasion,
 					"Approximate hit chance: "..output.AccuracyHitChance.."%",
+					minAccOut, --minimum accuracy output
 				}
 			end
 		end
