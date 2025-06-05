@@ -1,4 +1,4 @@
-describe("TestAccCalc #tag", function()
+describe("TestAccCalc", function()
 	before_each(function()
 		newBuild()
 	end)
