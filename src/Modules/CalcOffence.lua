@@ -2019,19 +2019,20 @@ function calcs.offence(env, actor, activeSkill)
 
 			-- calc for minimum accuracy required to hit an enemy
 			-- Formula for chance to hit https://www.poewiki.net/wiki/Accuracy
-			local minAccOut="" --holds the breakdown output for minimum accuracy calculations
+			local minAccOut = "" --holds the breakdown output for minimum accuracy calculations
 			local accDiffPercent = 0 --holds the percent increase needed to reach minimum accuracy
-			local minAccToHit = round((.995*(enemyEvasion/5)^0.9)/(1.25-.995),0) -- holds the minimum total accuracy needed
-			local accDiff = minAccToHit - output.Accuracy --Difference between the current character accuracy and the minimum needed
+			local minAccToHit = round(((.995*(enemyEvasion/5)^0.9)/(1.25-.995)) + 0.5,0) -- holds the minimum total accuracy needed (rounded up to ensure it meets 100%)
+			local accuracyVsEnemyNoFloor = baseVsEnemy * (1 + incVsEnemy / 100) * moreVsEnemy -- Need the accuracyVsEnemy value without the m_floor applied to it
+			local accDiff = minAccToHit - accuracyVsEnemyNoFloor --Difference between the current character accuracy and the minimum needed
 			if accDiff ~= 0 then
 				if output.Accuracy > 0 then
 					accDiffPercent = round((100*(((minAccToHit)/(baseVsEnemy*moreVsEnemy))-1))-incVsEnemy) --The amount of % increases to reach minAccToHit from output.Accuracy
 				else
-					accDiffPercent = 0 --removes odd cases
+					accDiffPercent = 0 --removes odd cases of %inc being negative
 				end
-				local scaledFlatAccDiff = round(accDiff/((1+incVsEnemy/100) * moreVsEnemy)) --scale the accDiff based on % increase and more to give
+				local scaledFlatAccDiff = round(accDiff/((1+incVsEnemy/100) * moreVsEnemy)) --scale the accDiff based on % increase and more to give the flat needed accuracy
 				if accDiff > 0 then
-					scaledFlatAccDiff = "+"..scaledFlatAccDiff --add a + to the scaled flat acc diff
+					scaledFlatAccDiff = "+"..scaledFlatAccDiff --add a + to the scaled flat acc diff if you need more accuracy and not less
 				end
 				minAccOut = s_format("Required accuracy for 100%%: %d (%d%% inc Acc / %s to Acc)", minAccToHit, accDiffPercent, scaledFlatAccDiff)
 			end
