@@ -1,3 +1,12 @@
+-- current test case list
+-- 1. accDiff = 0
+-- 2. accDiff > 0
+-- 3. accDiff < 0
+-- 4. accuracyVsEnemyNoFloor = 0
+-- 5. 40% reduced accuracy
+-- 6. 40% increased accuracy
+-- 7. 40% less accuracy
+-- 8. 40% more accuracy
 describe("TestAccCalc", function()
 	before_each(function()
 		newBuild()
