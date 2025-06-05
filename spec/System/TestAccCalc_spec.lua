@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 describe("TestAccCalc", function()
-=======
-describe("TestAccCalc #tag", function()
->>>>>>> 13a6fd6a (MaxDev Branch Creation)
 	before_each(function()
 		newBuild()
 	end)
